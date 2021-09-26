@@ -91,7 +91,7 @@ class Tester:
                 )
                 plot_func = self.mean_plot
             if test_func == "ranksums":
-                test_func = self.ranksums
+                test_func = self.ranksums_test
                 plot_func = self.median_plot
             plot_func = partial(
                 plot_func,
@@ -274,8 +274,8 @@ class Tester:
             7-ple : (m0, q0_low, q0_high, m1, q1_low, q1_high, p) 
 
         """
-        X0  = X[np.argwhere(y=0)]
-        X1  = X[np.argwhere(y=1)]
+        X0  = X[np.argwhere(y==0)]
+        X1  = X[np.argwhere(y==1)]
         m0  = np.median(X0)
         m1  = np.median(X1)
         q0_low, q0_high = self.bootstrap(X0)
@@ -301,12 +301,12 @@ class Tester:
         Returns fig, ax 
         """
         m0      = np.array([x[0] for x in RESULTS])
-        q0_low  = np.array([x[2] for x in RESULTS])
-        q0_high = np.array([x[3] for x in RESULTS])
-        m1      = np.array([x[4] for x in RESULTS])
-        q1_low  = np.array([x[5] for x in RESULTS])
-        q1_high = np.array([x[6] for x in RESULTS])
-        p       = np.array([x[7] for x in RESULTS])
+        q0_low  = np.array([x[1] for x in RESULTS])
+        q0_high = np.array([x[2] for x in RESULTS])
+        m1      = np.array([x[3] for x in RESULTS])
+        q1_low  = np.array([x[4] for x in RESULTS])
+        q1_high = np.array([x[5] for x in RESULTS])
+        p       = np.array([x[6] for x in RESULTS])
         x       = np.linspace(sample_size, sample_max, len(p))
         fig, ax = plt.subplots()
         plt.suptitle(title)
@@ -343,7 +343,7 @@ class Tester:
         plt.legend(handles = h1+h2, labels=l1+l2)  
         return fig, ax
 
-    def bootstrap(X : np.ndarray) -> float:
+    def bootstrap(self, X : np.ndarray) -> float:
         """
         Estimates median CI of X via bootstrap.
         #TODO improve flexibility and employ better
@@ -358,9 +358,10 @@ class Tester:
             low=0, high=X.shape[0], size=it*sample_size
         )
         # obtaining 5 and 95 percentile
-        np.percentile(
+        return np.percentile(
             np.median(
                 X[index].reshape(sample_size, it),
                 axis=0
-            )
+            ),
+            [30, 70]
         )
