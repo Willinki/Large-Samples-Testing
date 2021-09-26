@@ -48,7 +48,7 @@ The function has the following arguments:
     * `title` : `str`
       Plot suptitle
 
-The plot is further modifiable via `fig` and `ax`.
+The plot is further modifiable via `fig` and `ax`, looks like [this](https://github.com/Willinki/Large-Samples-Testing/blob/main/ci_chart.png?raw=true).
 
 ## Todo
 Improve `Tester.bootstrap` flexibility.
