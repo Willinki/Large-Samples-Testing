@@ -84,19 +84,23 @@ class Tester:
                 test_func = partial(
                     self.test_ttest, stud=False
                 )
+                mean=True
                 plot_func = self.cont_plot
             if test_func == "ttest":
                 test_func = partial(
                     self.test_ttest, stud=True
                 )
+                mean=True
                 plot_func = self.cont_plot
             if test_func == "ranksums":
                 test_func = self.ranksums
+                mean=False
                 plot_func = self.cont_plot
             plot_func = partial(
                 plot_func,
                 sample_max = sample_max,
                 sample_size = sample_size,
+                mean = mean,
                 **plotkwargs
             )
         elif isinstance(test_func, Callable):
@@ -214,7 +218,8 @@ class Tester:
             self, 
             RESULTS     : list         , 
             sample_size : float        , 
-            sample_max  : float        , 
+            sample_max  : float        ,
+            mean        : bool         , 
             p_limit     : float = 0.05 ,
             labels      : tuple = (0,1), 
             title       : str   = None
@@ -231,9 +236,13 @@ class Tester:
         x  = np.linspace(sample_size, sample_max, len(p))
         fig, ax = plt.subplots()
         plt.suptitle(title)
-        # ratios
-        ax.set_ylabel("Mean values (shaded area = 1stderr)")
+        # labels
+        if mean:
+            ax.set_ylabel("Mean values (shaded area = 1stderr)")
+        else:
+            ax.set_ylabel("Medians (shaded area [5, 95] percentile)")
         ax.set_xlabel("Percentage of sampled dataset")
+        #ratios
         ax.plot(
             x, m0, 
             marker="^", markersize=1.5, lw=0.7, label=labels[0]
