@@ -232,14 +232,14 @@ class Tester:
         fig, ax = plt.subplots()
         plt.suptitle(title)
         # ratios
-        ax.set_ylabel("Mean values (shaded area = 3stderr)")
+        ax.set_ylabel("Mean values (shaded area = 1stderr)")
         ax.set_xlabel("Percentage of sampled dataset")
         ax.plot(
             x, m0, 
             marker="^", markersize=1.5, lw=0.7, label=labels[0]
         )
         ax.fill_between(
-            y1 = m0+3*se0, y2 = m0-3*se0, x = x, 
+            y1 = m0+se0, y2 = m0-se0, x = x, 
             alpha = 0.35
         )
         ax.plot(
@@ -247,7 +247,7 @@ class Tester:
             marker="^", markersize=1.5, lw=0.7, label=labels[1]
         )
         ax.fill_between(
-            y1 = m1+3*se1, y2 = m1-3*se1, x = x,
+            y1 = m1+se1, y2 = m1-se1, x = x,
             alpha = 0.35
         )
         #p-value
