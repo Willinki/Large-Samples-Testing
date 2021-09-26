@@ -51,7 +51,7 @@ The function has the following arguments:
 The plot is further modifiable via `fig` and `ax`.
 
 ## Todo
-Implement confidence intervals for the median in `ranksums_test`.
+Improve `Tester.bootstrap` flexibility.
 
 # References
 Lin, Mingfeng & Lucas, Henry & Shmueli, Galit. (2013). Too Big to Fail: Large Samples and the p-Value Problem. Information Systems Research. 24. 906-917. 10.1287/isre.2013.0480. 
