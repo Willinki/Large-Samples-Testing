@@ -125,7 +125,6 @@ class Tester:
         for it in tqdm(range(ITERATIONS)):
             ind = np.random.choice(idx, N, replace=False)
             idx = np.delete(idx, np.in1d(idx, ind, assume_unique=True))
-            print(ind)
             try:
                 y_samp = y[ind]
             except TypeError:
@@ -133,8 +132,7 @@ class Tester:
             RESULTS[it] = test_func(X[ind], y_samp)
         
         # plotting
-        plot_func(RESULTS)
-        return RESULTS
+        return plot_func(RESULTS)
             
     def chi2_test(self, X, y):
         """
@@ -201,13 +199,13 @@ class Tester:
         -------
             5-ple : (m0, se0, m1, se1, p)
         """
-        X0  = X[np.argwhere(y=0)]
-        X1  = X[np.argwhere(y=1)]
+        X0  = X[np.argwhere(y==0)]
+        X1  = X[np.argwhere(y==1)]
         m0  = np.mean(X0)
         m1  = np.mean(X1)
         se0 = np.std(X0)/math.sqrt(X0.shape[0])
         se1 = np.std(X1)/math.sqrt(X1.shape[0])
-        p   = ttest_ind(X0, X1, equal_var=stud) 
+        p   = ttest_ind(X0, X1, equal_var=stud)[1] 
         return (m0, se0, m1, se1, p) 
     
     def mean_plot(
