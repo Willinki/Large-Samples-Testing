@@ -82,12 +82,12 @@ class Tester:
                 plot_func = self.chi2_plot
             if test_func == "welch":
                 test_func = partial(
-                    self.test_ttest, stud=False
+                    self.ttest_test, stud=False
                 )
                 plot_func = self.mean_plot
             if test_func == "ttest":
                 test_func = partial(
-                    self.test_ttest, stud=True
+                    self.ttest_test, stud=True
                 )
                 plot_func = self.mean_plot
             if test_func == "ranksums":
