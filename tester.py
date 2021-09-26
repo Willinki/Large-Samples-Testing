@@ -122,7 +122,6 @@ class Tester:
         N          = int(sample_size*X.shape[0])  #points added per loop
         RESULTS    = [None] * ITERATIONS          #results list
         idx        = range(X.shape[0])
-        print(ITERATIONS)
         for it in tqdm(range(ITERATIONS)):
             ind = np.random.choice(idx, N, replace=False)
             idx = np.delete(idx, np.in1d(idx, ind, assume_unique=True))
