@@ -121,10 +121,12 @@ class Tester:
         ITERATIONS = int(sample_max/sample_size)  #number of iterations
         N          = int(sample_size*X.shape[0])  #points added per loop
         RESULTS    = [None] * ITERATIONS          #results list
-        idx        = range(X.shape[0])
-        for it in tqdm(range(ITERATIONS)):
-            ind = np.random.choice(idx, N, replace=False)
-            idx = np.delete(idx, np.in1d(idx, ind, assume_unique=True))
+        CUTS       = np.arange(0, X.shape[0]+1, N)[1:ITERATIONS+1]
+        IDX        = np.arange(X.shape[0])        #sampling elements
+        np.random.shuffle(IDX)
+        
+        for it, idx_max in enumerate(tqdm(CUTS)):
+            ind = IDX[:idx_max]
             try:
                 y_samp = y[ind]
             except TypeError:
@@ -229,7 +231,7 @@ class Tester:
         x  = np.linspace(sample_size, sample_max, len(p))
         fig, ax = plt.subplots()
         plt.suptitle(title)
-        ax.set_ylabel("Mean values (shaded area = 1stderr)")
+        ax.set_ylabel("Mean values (shaded area = 2stderr)")
         ax.set_xlabel("Percentage of sampled dataset")
         #ratios
         ax.plot(
@@ -237,8 +239,8 @@ class Tester:
             marker="^", markersize=1.5, lw=0.7, label=labels[0]
         )
         ax.fill_between(
-            y1 = m0+se0, y2 = m0-se0, x = x, 
-            alpha = 0.35
+            y1 = m0+2*se0, y2 = m0-2*se0, x = x, 
+            alpha = 0.20
         )
         ax.plot(
             x, m1,
@@ -246,12 +248,12 @@ class Tester:
         )
         ax.fill_between(
             y1 = m1+se1, y2 = m1-se1, x = x,
-            alpha = 0.35
+            alpha = 0.20
         )
         #p-value
         ax2 = ax.twinx()
         ax2.set_ylabel("p-values")
-        ax2.plot(x, p, 'ko--', markersize=2, lw=0.7, label="p-values")
+        ax2.plot(x, p, 'ko--', markersize=1, lw=0.4, label="p-values")
         ax2.hlines(
             p_limit, x[0], x[-1], 
             color="k", linewidth=0.3, label="p-value threshold"
@@ -315,24 +317,24 @@ class Tester:
         #ratios
         ax.plot(
             x, m0, 
-            marker="^", markersize=1.5, lw=0.7, label=labels[0]
+            marker="^", markersize=1, lw=0.7, label=labels[0]
         )
         ax.fill_between(
             y1 = q0_high, y2 = q0_low, x = x, 
-            alpha = 0.35
+            alpha = 0.20
         )
         ax.plot(
             x, m1,
-            marker="^", markersize=1.5, lw=0.7, label=labels[1]
+            marker="^", markersize=1, lw=0.7, label=labels[1]
         )
         ax.fill_between(
             y1 = q1_high, y2 = q1_low, x = x,
-            alpha = 0.35
+            alpha = 0.20
         )
         #p-value
         ax2 = ax.twinx()
         ax2.set_ylabel("p-values")
-        ax2.plot(x, p, 'ko--', markersize=2, lw=0.7, label="p-values")
+        ax2.plot(x, p, 'ko--', markersize=1, lw=0.4, label="p-values", alpha=0.5)
         ax2.hlines(
             p_limit, x[0], x[-1], 
             color="k", linewidth=0.3, label="p-value threshold"
@@ -356,6 +358,7 @@ class Tester:
         # samples indexes
         index = np.random.randint(
             low=0, high=X.shape[0], size=it*sample_size
+            
         )
         # obtaining 5 and 95 percentile
         return np.percentile(
@@ -363,5 +366,5 @@ class Tester:
                 X[index].reshape(sample_size, it),
                 axis=0
             ),
-            [30, 70]
+            [5, 95]
         )
