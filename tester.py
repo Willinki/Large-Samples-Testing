@@ -164,7 +164,7 @@ class Tester:
         p  = [x[2] for x in RESULTS]
         x  = np.linspace(sample_size, sample_max, len(p))
         fig, ax = plt.subplots()
-        plt.suptitle(title)
+        ax.set_title(title)
         # ratios
         ax.set_ylabel("Marginal ratios")
         ax.set_xlabel("Percentage of sampled dataset")
@@ -182,7 +182,7 @@ class Tester:
         ax2.plot(x, p, 'ko--', markersize=2, lw=0.7, label="p-values")
         ax2.hlines(
             p_limit, x[0], x[-1], 
-            color="k", linewidth=0.3, label="p-value threshold"
+            color="k", linewidth=0.3, label="p-value limit"
         )
         # legend 
         h1, l1 = ax.get_legend_handles_labels()
@@ -247,7 +247,7 @@ class Tester:
             marker="^", markersize=1.5, lw=0.7, label=labels[1]
         )
         ax.fill_between(
-            y1 = m1+se1, y2 = m1-se1, x = x,
+            y1 = m1+2*se1, y2 = m1-2*se1, x = x,
             alpha = 0.20
         )
         #p-value
@@ -261,7 +261,7 @@ class Tester:
         # legend 
         h1, l1 = ax.get_legend_handles_labels()
         h2, l2 = ax2.get_legend_handles_labels()
-        plt.legend(handles = h1+h2, labels=l1+l2)  
+        plt.legend(handles = h1+h2, labels=l1+l2, fontsize='xx-small')  
         return fig, ax
 
     def ranksums_test(self, X, y):
@@ -311,7 +311,7 @@ class Tester:
         p       = np.array([x[6] for x in RESULTS])
         x       = np.linspace(sample_size, sample_max, len(p))
         fig, ax = plt.subplots()
-        plt.suptitle(title)
+        ax.set_title(title)
         ax.set_ylabel("Median values (shaded area = [5, 95] perc)")
         ax.set_xlabel("Percentage of sampled dataset")
         #ratios
@@ -337,12 +337,12 @@ class Tester:
         ax2.plot(x, p, 'ko--', markersize=1, lw=0.4, label="p-values", alpha=0.5)
         ax2.hlines(
             p_limit, x[0], x[-1], 
-            color="k", linewidth=0.3, label="p-value threshold"
+            color="k", linewidth=0.3, label="p-value limit"
         )
         # legend 
         h1, l1 = ax.get_legend_handles_labels()
         h2, l2 = ax2.get_legend_handles_labels()
-        plt.legend(handles = h1+h2, labels=l1+l2)  
+        plt.legend(handles = h1+h2, labels=l1+l2, fontsize='xx-small')  
         return fig, ax
 
     def bootstrap(self, X : np.ndarray) -> float:
