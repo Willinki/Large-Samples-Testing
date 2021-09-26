@@ -84,23 +84,19 @@ class Tester:
                 test_func = partial(
                     self.test_ttest, stud=False
                 )
-                mean=True
-                plot_func = self.cont_plot
+                plot_func = self.mean_plot
             if test_func == "ttest":
                 test_func = partial(
                     self.test_ttest, stud=True
                 )
-                mean=True
-                plot_func = self.cont_plot
+                plot_func = self.mean_plot
             if test_func == "ranksums":
                 test_func = self.ranksums
-                mean=False
-                plot_func = self.cont_plot
+                plot_func = self.median_plot
             plot_func = partial(
                 plot_func,
                 sample_max = sample_max,
                 sample_size = sample_size,
-                mean = mean,
                 **plotkwargs
             )
         elif isinstance(test_func, Callable):
@@ -214,12 +210,11 @@ class Tester:
         p   = ttest_ind(X0, X1, equal_var=stud) 
         return (m0, se0, m1, se1, p) 
     
-    def cont_plot(
+    def mean_plot(
             self, 
             RESULTS     : list         , 
             sample_size : float        , 
             sample_max  : float        ,
-            mean        : bool         , 
             p_limit     : float = 0.05 ,
             labels      : tuple = (0,1), 
             title       : str   = None
@@ -236,11 +231,7 @@ class Tester:
         x  = np.linspace(sample_size, sample_max, len(p))
         fig, ax = plt.subplots()
         plt.suptitle(title)
-        # labels
-        if mean:
-            ax.set_ylabel("Mean values (shaded area = 1stderr)")
-        else:
-            ax.set_ylabel("Medians (shaded area [5, 95] percentile)")
+        ax.set_ylabel("Mean values (shaded area = 1stderr)")
         ax.set_xlabel("Percentage of sampled dataset")
         #ratios
         ax.plot(
@@ -278,17 +269,100 @@ class Tester:
         Given X with shape (n_instances, 1) representing two 
         continuos distributions, y binary indicating the
         differentiating variable
-        Performs student test and returns means, standard errors, p-values
+        Performs ranksums and returns medians, CI, p-values
         #TODO IMPLEMENT CI FOR MEDIANS VIA BOOTSTRAP
         Returns
         -------
-            5-ple : (m0, se0, m1, se1, p)
+            7-ple : (m0, q0_low, q0_high, m1, q1_low, q1_high, p) 
+
         """
         X0  = X[np.argwhere(y=0)]
         X1  = X[np.argwhere(y=1)]
         m0  = np.median(X0)
         m1  = np.median(X1)
-        se0 = 0
-        se1 = 0
+        q0_low, q0_high = self.bootstrap(X0)
+        q1_low, q1_high = self.bootstrap(X1)
         p   = ranksums(X0, X1)[1]
-        return (m0, se0, m1, se1, p) 
+        return (
+            m0, q0_low, q0_high, 
+            m1, q1_low, q1_high, 
+            p
+        ) 
+    
+    def median_plot(
+            self, 
+            RESULTS     : list         , 
+            sample_size : float        , 
+            sample_max  : float        ,
+            p_limit     : float = 0.05 ,
+            labels      : tuple = (0,1), 
+            title       : str   = None
+            ):
+        """
+        Given an array of (ratio0, ratio1, pvalue) creates ci_plot
+        Returns fig, ax 
+        """
+        m0      = np.array([x[0] for x in RESULTS])
+        q0_low  = np.array([x[2] for x in RESULTS])
+        q0_high = np.array([x[3] for x in RESULTS])
+        m1      = np.array([x[4] for x in RESULTS])
+        q1_low  = np.array([x[5] for x in RESULTS])
+        q1_high = np.array([x[6] for x in RESULTS])
+        p       = np.array([x[7] for x in RESULTS])
+        x       = np.linspace(sample_size, sample_max, len(p))
+        fig, ax = plt.subplots()
+        plt.suptitle(title)
+        ax.set_ylabel("Median values (shaded area = [5, 95] perc)")
+        ax.set_xlabel("Percentage of sampled dataset")
+        #ratios
+        ax.plot(
+            x, m0, 
+            marker="^", markersize=1.5, lw=0.7, label=labels[0]
+        )
+        ax.fill_between(
+            y1 = q0_high, y2 = q0_low, x = x, 
+            alpha = 0.35
+        )
+        ax.plot(
+            x, m1,
+            marker="^", markersize=1.5, lw=0.7, label=labels[1]
+        )
+        ax.fill_between(
+            y1 = q1_high, y2 = q1_low, x = x,
+            alpha = 0.35
+        )
+        #p-value
+        ax2 = ax.twinx()
+        ax2.set_ylabel("p-values")
+        ax2.plot(x, p, 'ko--', markersize=2, lw=0.7, label="p-values")
+        ax2.hlines(
+            p_limit, x[0], x[-1], 
+            color="k", linewidth=0.3, label="p-value threshold"
+        )
+        # legend 
+        h1, l1 = ax.get_legend_handles_labels()
+        h2, l2 = ax2.get_legend_handles_labels()
+        plt.legend(handles = h1+h2, labels=l1+l2)  
+        return fig, ax
+
+    def bootstrap(X : np.ndarray) -> float:
+        """
+        Estimates median CI of X via bootstrap.
+        #TODO improve flexibility and employ better
+        estimates
+        """
+        it = 1000
+        sample_size = int(X.shape[0]*0.1)
+        if sample_size < 50: 
+            sample_size=50
+        # samples indexes
+        index = np.random.randint(
+            low=0, high=X.shape[0], size=it*sample_size
+        )
+        # obtaining 5 and 95 percentile
+        np.percentile(
+            np.median(
+                X[index].reshape(sample_size, it),
+                axis=0
+            )
+        )
