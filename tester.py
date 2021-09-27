@@ -78,7 +78,7 @@ class Tester:
             ], "Specify a valid test"
             # setting plot_func and test_func
             if test_func == "chi2":
-                test_func = self.chi2
+                test_func = self.chi2_test
                 plot_func = self.chi2_plot
             if test_func == "welch":
                 test_func = partial(
