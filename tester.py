@@ -187,7 +187,7 @@ class Tester:
         # legend 
         h1, l1 = ax.get_legend_handles_labels()
         h2, l2 = ax2.get_legend_handles_labels()
-        plt.legend(handles = h1+h2, labels=l1+l2)  
+        plt.legend(handles = h1+h2, labels=l1+l2, fontsize='xx-small')  
         return fig, ax
 
     def ttest_test(self, X, y, stud=True):
