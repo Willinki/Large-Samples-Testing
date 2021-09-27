@@ -106,8 +106,8 @@ class Tester:
             raise AttributeError("Specify a valid test_func")
         # balancing data
         if balance:
-            ind0 = np.argwhere(y==0)
-            ind1 = np.argwhere(y==1)
+            ind0 = np.argwhere(y==0).flatten()
+            ind1 = np.argwhere(y==1).flatten()
             n  = min(ind1.shape[0], ind0.shape[0])
             if n == ind1.shape[0]:
                 ind0 = np.random.choice(ind0, size=n)
