@@ -313,7 +313,7 @@ class Tester:
         fig, ax = plt.subplots()
         ax.set_title(title)
         ax.set_ylabel("Median values (shaded area = [5, 95] perc)")
-        ax.set_xlabel("Percentage of sampled dataset")
+        ax.set_xlabel("Fraction of sampled dataset")
         #ratios
         ax.plot(
             x, m0, 
